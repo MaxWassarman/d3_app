@@ -1,9 +1,3 @@
-install.packages(c("dplyr", "purrr", "cli", "remotes"), repos = "https://cloud.r-project.org")
-
-remotes::install_url("https://github.com/BillPetti/baseballr/archive/refs/heads/master.tar.gz", 
-                     dependencies = TRUE)
-remotes::install_url("https://github.com/robert-frey/collegebaseball/archive/refs/heads/main.tar.gz", 
-                     dependencies = TRUE)
 # Load GitHub packages
 library(dplyr)
 library(purrr)
