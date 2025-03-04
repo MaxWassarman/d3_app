@@ -23,7 +23,7 @@ jobs:
         run: |
           Rscript -e 'install.packages(c("dplyr", "purrr", "cli", "remotes"))'
           Rscript -e 'remotes::install_github("BillPetti/baseballr", dependencies = TRUE)'
-          Rscript -e 'remotes::install_github("sportsdataverse/collegebaseball", dependencies = TRUE)'
+          Rscript -e 'remotes::install_github("robert-frey/collegebaseball", dependencies = TRUE)'
       
       - name: Create data directory
         run: mkdir -p data
