@@ -23,7 +23,7 @@ jobs:
         run: mkdir -p data
       
       - name: Run data collection script
-        run: Rscript get_stats.R
+        run: Rscript ./scrapers/get_stats.R
       
       - name: Configure Git
         run: |
