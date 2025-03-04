@@ -1,28 +1,14 @@
-pkgs <- c("dplyr", "purrr", "cli", "remotes", "devtools")
-new_pkgs <- pkgs[!pkgs %in% installed.packages()[,"Package"]]
-if(length(new_pkgs)) install.packages(new_pkgs, repos = "https://cloud.r-project.org")
+install.packages(c("dplyr", "purrr", "cli", "remotes"), repos = "https://cloud.r-project.org")
 
-# Load required libraries
-library(dplyr)
-library(purrr)
-library(cli)
-library(remotes)
-library(devtools)
-
-# Install GitHub packages if needed
-if(!requireNamespace("baseballr", quietly = TRUE)) {
-  message("Installing baseballr from GitHub...")
-  devtools::install_github("BillPetti/baseballr", dependencies = TRUE)
-}
-
-if(!requireNamespace("collegebaseball", quietly = TRUE)) {
-  message("Installing collegebaseball from GitHub...")
-  devtools::install_github("robert-frey/collegebaseball", dependencies = TRUE)
-}
+# Install GitHub packages
+remotes::install_github("BillPetti/baseballr", dependencies = TRUE)
+remotes::install_github("robert-frey/collegebaseball", dependencies = TRUE)
 
 # Load GitHub packages
 library(dplyr)
 library(purrr)
+library(cli)
+library(remotes)
 library(baseballr)
 library(collegebaseball)
 
