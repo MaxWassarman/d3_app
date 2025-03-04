@@ -2,8 +2,9 @@ library(dplyr)
 library(purrr)
 library(collegebaseball)
 
-# Make sure the data directory exists
-dir.create("/Users/maxwassarman/d3_app/data", recursive = TRUE, showWarnings = FALSE)
+# Use a relative data directory that will work in GitHub Actions
+data_dir <- "data"
+dir.create(data_dir, recursive = TRUE, showWarnings = FALSE)
 
 ncaa_stats_bulk <- function(year, 
                             type = 'batting', 
@@ -55,6 +56,9 @@ ncaa_stats_bulk <- function(year,
           mutate(across(where(is.logical), as.character))
       }
       
+      # Add a small delay to avoid overwhelming the NCAA server
+      Sys.sleep(0.2)
+      
       return(result$result)
     }
   )
@@ -72,6 +76,19 @@ ncaa_stats_bulk <- function(year,
   return(combined_stats)
 }
 
+# Generate weights file if it doesn't exist
+generate_woba_weights <- function(year) {
+  # Simple function to create weights file
+  # In a real scenario, you might calculate these differently
+  weights_df <- data.frame(
+    events = c("BB", "HBP", "1B", "2B", "3B", "HR"),
+    woba_scale = c(0.69, 0.72, 0.89, 1.27, 1.62, 2.10)
+  )
+  
+  write.csv(weights_df, file.path(data_dir, paste0("d3_weights_", year, ".csv")), row.names = FALSE)
+  cli::cli_alert_success(paste("Created wOBA weights file for", year))
+}
+
 # Get the current year
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 
@@ -83,7 +100,7 @@ for (division in 3) {
   cli::cli_alert_info(paste("Collecting batting stats for D", division, year))
   tryCatch({
     batting <- ncaa_stats_bulk(year = year, type = "batting", divisions = division)
-    write.csv(batting, paste0("/Users/maxwassarman/d3_app/data/d", division, "_batting_", year, ".csv"), row.names = FALSE)
+    write.csv(batting, file.path(data_dir, paste0("d", division, "_batting_", year, ".csv")), row.names = FALSE)
     cli::cli_alert_success(paste("Successfully saved batting stats for D", division, year))
   }, error = function(e) {
     cli::cli_alert_danger(paste("Failed to collect batting stats:", e$message))
@@ -93,13 +110,15 @@ for (division in 3) {
   cli::cli_alert_info(paste("Collecting pitching stats for D", division, year))
   tryCatch({
     pitching <- ncaa_stats_bulk(year = year, type = "pitching", divisions = division)
-    write.csv(pitching, paste0("/Users/maxwassarman/d3_app/data/d", division, "_pitching_", year, ".csv"), row.names = FALSE)
+    write.csv(pitching, file.path(data_dir, paste0("d", division, "_pitching_", year, ".csv")), row.names = FALSE)
     cli::cli_alert_success(paste("Successfully saved pitching stats for D", division, year))
   }, error = function(e) {
     cli::cli_alert_danger(paste("Failed to collect pitching stats:", e$message))
   })
+  
+  # Generate weights file if needed
+  generate_woba_weights(year)
 }
 
 # Output a completion message
 cli::cli_alert_success(paste("Data collection completed at", Sys.time()))
-

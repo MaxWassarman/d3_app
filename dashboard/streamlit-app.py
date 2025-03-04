@@ -10,8 +10,8 @@ st.set_page_config(
     layout="wide"
 )
 
-# Data directory
-DATA_DIR = "/Users/maxwassarman/d3_app/data/"
+# Data directory - change to relative path for GitHub deployment
+DATA_DIR = "data/"
 
 def get_available_years():
     """Get available years from data files"""
@@ -71,6 +71,8 @@ def load_data(year):
     
     return batting_data, pitching_data, all_teams, batting_time, pitching_time
 
+
+# Process batting data function
 def process_batting_data(batting_data, team, year):
     """Process batting data for a specific team"""
     if batting_data is None:
