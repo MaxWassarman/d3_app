@@ -1,8 +1,31 @@
+pkgs <- c("dplyr", "purrr", "cli", "remotes", "devtools")
+new_pkgs <- pkgs[!pkgs %in% installed.packages()[,"Package"]]
+if(length(new_pkgs)) install.packages(new_pkgs, repos = "https://cloud.r-project.org")
+
+# Load required libraries
 library(dplyr)
 library(purrr)
+library(cli)
+library(remotes)
+library(devtools)
+
+# Install GitHub packages if needed
+if(!requireNamespace("baseballr", quietly = TRUE)) {
+  message("Installing baseballr from GitHub...")
+  devtools::install_github("BillPetti/baseballr", dependencies = TRUE)
+}
+
+if(!requireNamespace("collegebaseball", quietly = TRUE)) {
+  message("Installing collegebaseball from GitHub...")
+  devtools::install_github("robert-frey/collegebaseball", dependencies = TRUE)
+}
+
+# Load GitHub packages
+library(dplyr)
+library(purrr)
+library(baseballr)
 library(collegebaseball)
 
-# Use a relative data directory that will work in GitHub Actions
 data_dir <- "data"
 dir.create(data_dir, recursive = TRUE, showWarnings = FALSE)
 
