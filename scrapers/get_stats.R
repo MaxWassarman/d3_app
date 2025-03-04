@@ -76,19 +76,6 @@ ncaa_stats_bulk <- function(year,
   return(combined_stats)
 }
 
-# Generate weights file if it doesn't exist
-generate_woba_weights <- function(year) {
-  # Simple function to create weights file
-  # In a real scenario, you might calculate these differently
-  weights_df <- data.frame(
-    events = c("BB", "HBP", "1B", "2B", "3B", "HR"),
-    woba_scale = c(0.69, 0.72, 0.89, 1.27, 1.62, 2.10)
-  )
-  
-  write.csv(weights_df, file.path(data_dir, paste0("d3_weights_", year, ".csv")), row.names = FALSE)
-  cli::cli_alert_success(paste("Created wOBA weights file for", year))
-}
-
 # Get the current year
 current_year <- as.integer(format(Sys.Date(), "%Y"))
 
@@ -115,9 +102,6 @@ for (division in 3) {
   }, error = function(e) {
     cli::cli_alert_danger(paste("Failed to collect pitching stats:", e$message))
   })
-  
-  # Generate weights file if needed
-  generate_woba_weights(year)
 }
 
 # Output a completion message
