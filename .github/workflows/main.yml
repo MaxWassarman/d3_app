@@ -1,0 +1,42 @@
+name: Update Baseball Statistics
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.2.0'
+      
+      - name: Install R dependencies
+        run: |
+          Rscript -e 'install.packages(c("dplyr", "purrr", "cli", "remotes"))'
+          Rscript -e 'remotes::install_github("BillPetti/baseballr", dependencies = TRUE)'
+          Rscript -e 'remotes::install_github("sportsdataverse/collegebaseball", dependencies = TRUE)'
+      
+      - name: Create data directory
+        run: mkdir -p data
+      
+      - name: Run data collection script
+        run: Rscript get_stats.R
+      
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+      
+      - name: Commit and push if changes
+        run: |
+          git add -A
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update baseball statistics data [automated]" && git push)
