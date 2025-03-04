@@ -36,7 +36,7 @@ jobs:
           Rscript -e "remotes::install_local('packages/collegebaseball.tar.gz', dependencies = TRUE)"
       
       - name: Run data collection script
-        run: Rscript get_stats.R
+        run: Rscript ./scrapers/get_stats.R
       
       - name: Commit and push changes
         run: |
