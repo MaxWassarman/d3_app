@@ -2,9 +2,8 @@ name: Update Baseball Statistics
 
 on:
   schedule:
-    # Run every 6 hours
     - cron: '0 */6 * * *'
-  workflow_dispatch:  # Allow manual triggering
+  workflow_dispatch:
 
 jobs:
   update-stats:
@@ -19,19 +18,30 @@ jobs:
         with:
           r-version: '4.2.0'
       
-      - name: Create data directory
-        run: mkdir -p data
+      - name: Install base packages
+        run: |
+          Rscript -e "install.packages(c('dplyr', 'purrr', 'cli', 'remotes'), repos='https://cloud.r-project.org')"
+      
+      - name: Download and install baseball packages
+        run: |
+          # Create packages directory
+          mkdir -p packages
+          
+          # Download package archives
+          curl -L https://github.com/BillPetti/baseballr/archive/refs/heads/master.tar.gz -o packages/baseballr.tar.gz
+          curl -L https://github.com/robert-frey/collegebaseball/archive/refs/heads/master.tar.gz -o packages/collegebaseball.tar.gz
+          
+          # Install from local files
+          Rscript -e "remotes::install_local('packages/baseballr.tar.gz', dependencies = TRUE)"
+          Rscript -e "remotes::install_local('packages/collegebaseball.tar.gz', dependencies = TRUE)"
       
       - name: Run data collection script
-        run: Rscript ./scrapers/get_stats.R
+        run: Rscript get_stats.R
       
-      - name: Configure Git
+      - name: Commit and push changes
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
-      
-      - name: Commit and push if changes
-        run: |
           CURRENT_YEAR=$(date +%Y)
           git add "data/d3_batting_${CURRENT_YEAR}.csv" "data/d3_pitching_${CURRENT_YEAR}.csv"
           git diff --quiet && git diff --staged --quiet || (git commit -m "Update baseball statistics data [automated]" && git push)
