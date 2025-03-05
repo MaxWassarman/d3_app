@@ -78,7 +78,7 @@ def process_batting_data(batting_data, team, year):
     if batting_data is None:
         return None, 0
     
-    team_batting = batting_data[batting_data['team_name'] == team]
+    team_batting = batting_data[batting_data['team_name'] == team].copy()
     if team_batting.empty:
         return None, 0
     
@@ -208,7 +208,7 @@ def process_pitching_data(pitching_data, team):
         lg_hr_fb_rate = None
     
     # Filter for the selected team
-    team_pitching = pitching_data[pitching_data['team_name'] == team]
+    team_pitching = pitching_data[pitching_data['team_name'] == team].copy()
     if team_pitching.empty:
         return None
     
