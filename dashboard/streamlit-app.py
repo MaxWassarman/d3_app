@@ -96,7 +96,7 @@ def process_batting_data(batting_data, team, year):
             weights_df = pd.read_csv(weights_file)
             woba_weights = {}
             for _, row in weights_df.iterrows():
-                woba_weights[row['events']] = row['woba_scale']
+                woba_weights[row['events']] = row['normalized_weight']
             
             # Calculate singles (1B) if not already present
             if '1B' not in team_batting.columns:
@@ -105,8 +105,8 @@ def process_batting_data(batting_data, team, year):
             # Calculate wOBA
             # Default values in case some weights are missing
             default_weights = {
-                'BB': 0.69, 'HBP': 0.72, '1B': 0.89, 
-                '2B': 1.27, '3B': 1.62, 'HR': 2.10
+                'BB': 0.82, 'HBP': 0.85, '1B': 0.95, 
+                '2B': 1.27, '3B': 1.51, 'HR': 1.69
             }
             
             # Get weights from file or use defaults
