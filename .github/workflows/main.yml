@@ -18,22 +18,23 @@ jobs:
         with:
           r-version: '4.2.0'
       
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+      
       - name: Install base packages
         run: |
-          Rscript -e "install.packages(c('dplyr', 'purrr', 'cli', 'remotes'), repos='https://cloud.r-project.org')"
+          Rscript -e "install.packages(c('dplyr', 'purrr', 'cli', 'remotes', 'devtools'), repos='https://cloud.r-project.org')"
       
-      - name: Download and install baseball packages
+      - name: Install baseball packages directly from GitHub
         run: |
-          # Create packages directory
-          mkdir -p packages
-          
-          # Download package archives
-          curl -L https://github.com/BillPetti/baseballr/archive/refs/heads/master.tar.gz -o packages/baseballr.tar.gz
-          curl -L https://github.com/robert-frey/collegebaseball/archive/refs/heads/master.tar.gz -o packages/collegebaseball.tar.gz
-          
-          # Install from local files
-          Rscript -e "remotes::install_local('packages/baseballr.tar.gz', dependencies = TRUE)"
-          Rscript -e "remotes::install_local('packages/collegebaseball.tar.gz', dependencies = TRUE)"
+          Rscript -e "remotes::install_github('BillPetti/baseballr', dependencies = TRUE)"
+          Rscript -e "remotes::install_github('robert-frey/collegebaseball', dependencies = TRUE)"
+      
+      - name: Verify package installation
+        run: |
+          Rscript -e "installed.packages()[,'Package']"
       
       - name: Run data collection script
         run: Rscript ./scrapers/get_stats.R
