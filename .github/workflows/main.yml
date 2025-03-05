@@ -25,12 +25,16 @@ jobs:
       
       - name: Install base packages
         run: |
-          Rscript -e "install.packages(c('dplyr', 'purrr', 'cli', 'remotes', 'devtools'), repos='https://cloud.r-project.org')"
+          Rscript -e "install.packages(c('dplyr', 'purrr', 'cli', 'remotes'), repos='https://cloud.r-project.org')"
       
-      - name: Install baseball packages directly from GitHub
+      - name: Install baseball packages from local files
         run: |
-          Rscript -e "remotes::install_github('BillPetti/baseballr', dependencies = TRUE)"
-          Rscript -e "remotes::install_github('robert-frey/collegebaseball', dependencies = TRUE)"
+          # Verify packages directory exists
+          ls -la packages/
+          
+          # Install from local files with all dependencies
+          Rscript -e "remotes::install_local('packages/baseballr-master.tar.gz', dependencies = TRUE)"
+          Rscript -e "remotes::install_local('packages/collegebaseball-master.tar.gz', dependencies = TRUE)"
       
       - name: Verify package installation
         run: |
