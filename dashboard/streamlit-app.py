@@ -286,7 +286,7 @@ def display_batting_stats(team_batting, team_games, include_woba=True):
     # Select columns to display
     batting_cols = [
         "player_name", "Yr", "Pos", "GP", "BA", "OBPct", "SlgPct", "wOBA",
-        "AB", "R", "H", "2B", "3B", "HR", "RBI", "BB", "SO", "SB"
+        "AB", "R", "H", "2B", "3B", "HR",  "BB", "K", "RBI", "SB"
     ]
     
     # Only include columns that exist in the data
