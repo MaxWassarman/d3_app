@@ -3,6 +3,10 @@ import pandas as pd
 import numpy as np
 import os
 from datetime import datetime
+import polars as pl
+import requests
+from bs4 import BeautifulSoup
+import typing
 
 # Set page config
 st.set_page_config(
@@ -388,6 +392,14 @@ def display_pitching_stats(team_pitching):
     # Display caption
     st.caption(f"Players with white background: ≥1 IP/game.")
 
+def scrape_data_from_qab() -> typing.List[typing.List[str]]:
+    """Scrape data from Google Spreadsheet"""
+    html = requests.get('https://docs.google.com/spreadsheets/d/1lltZw6rxNMv7np5sojYrmU5z03gmQBrNWGpreb2JnX8/gviz/tq?tqx=out:html&tq&gid=1').text
+    soup = BeautifulSoup(html, 'html.parser')
+    data = soup.find_all('table')[0]
+    rows = [[td.text for td in row.find_all("td")] for row in data.find_all('tr')]
+    return rows
+
 def display_sidebar_info(batting_time, pitching_time):
     """Display data info in the sidebar"""
     st.sidebar.title("Data Info")
@@ -398,9 +410,8 @@ def display_sidebar_info(batting_time, pitching_time):
     if pitching_time:
         st.sidebar.info(f"Pitching data updated: {pitching_time.strftime('%Y-%m-%d %H:%M')}")
 
-def main():
-    """Main function to run the Streamlit app"""
-    # App title
+def show_team_stats_page():
+    """Display the team stats page"""
     st.title("Oberlin Baseball Team Stats Viewer")
     
     # Get available years
@@ -433,6 +444,47 @@ def main():
     
     # Display sidebar info
     display_sidebar_info(batting_time, pitching_time)
+
+def show_qab_data_page():
+    """Display the QAB data page"""
+    st.title("Hitter QAB Chart")
+    
+    try:
+        # Show loading message
+        with st.spinner("Loading data from spreadsheet..."):
+            # Get data from spreadsheet
+            rows = scrape_data_from_qab()
+            
+            # Use first row as column headers
+            if rows and len(rows) > 0:
+                headers = rows[0]
+                data = rows[1:]
+                
+                # Limit to first 25 columns
+                max_cols = 24
+                if len(headers) > max_cols:
+                    headers = headers[:max_cols]
+                    data = [row[:max_cols] for row in data]
+                
+                df = pl.DataFrame(data=data, schema=headers)
+            
+            # Display data
+            st.subheader("QAB Data")
+            st.dataframe(df.head(24), use_container_width=True)
+    except Exception as e:
+        st.error(f"Error loading spreadsheet data: {e}")
+
+def main():
+    """Main function to run the Streamlit app"""
+    # Add navigation to sidebar
+    st.sidebar.title("Navigation")
+    page = st.sidebar.radio("Go to", ["Team Stats", "QAB Data"])
+    
+    # Display the selected page
+    if page == "Team Stats":
+        show_team_stats_page()
+    else:
+        show_qab_data_page()
 
 # Run the app
 if __name__ == "__main__":
