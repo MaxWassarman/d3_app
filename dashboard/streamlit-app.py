@@ -208,7 +208,7 @@ def process_pitching_data(pitching_data, team):
                 lg_hr_fb_rate = pitching_data[hr_col].sum() / fb_total
     else:
         # Default FIP constant if we can't calculate it
-        f_constant = 3.10
+        f_constant = 4.81
         lg_hr_fb_rate = None
     
     # Filter for the selected team
