@@ -332,7 +332,7 @@ def display_pitching_stats(team_pitching):
     
     # Select columns to display
     pitching_cols = [
-        "player_name", "Yr", "GP", "GS", "ERA", "FIP", "xFIP", "IP", "W", "L", "BB%", "K%", "K-BB%",
+        "player_name", "Yr", "App", "GS", "ERA", "FIP", "xFIP", "IP", "W", "L", "BB%", "K%", "K-BB%",
         "H", "R", "ER", "BB", "SO"
     ]
     
